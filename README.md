@@ -16,7 +16,7 @@ This workflow ensure that the CI is the authority enforcing the code quality and
 ## Installation
 Install Python3.11 and VirutalEnvWrapper:
 ```bash
-sudo apt-get install python3.11 python3.11-venv python3-venv
+sudo apt-get install python3.10 python3.10-venv python3-venv
 sudo apt-get install python3-virtualenv
 
 pip install virtualenvwrapper
@@ -30,7 +30,7 @@ source ~/.local/bin/virtualenvwrapper.sh" >> ~/.bashrc
 
 Create Python environment:
 ```bash
-mkvirtualenv myenv -p python3.11
+mkvirtualenv myenv -p python3.10
 ```
 
 Install dependencies:
