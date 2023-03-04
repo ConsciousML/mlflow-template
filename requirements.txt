@@ -7,3 +7,4 @@ mypy
 setuptools
 mlflow
 torch
+torchvision
