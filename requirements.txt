@@ -6,3 +6,4 @@ bandit
 mypy
 setuptools
 mlflow
+torch
