@@ -46,7 +46,11 @@ def train(
         optimizer (Optimizer): This is the optimizer to use.
         device (str, optional): This is the device to use for training. Defaults to 'cuda'.
     """
-    size = len(dataloader.dataset)
+    size = len(dataloader.dataset)  # type: ignore
+
+    if dataloader.batch_size is None:
+        raise ValueError('The batch size must be specified.')
+
     nb_batches = int(size / dataloader.batch_size)
     for batch, (input_data, ground_truth) in enumerate(dataloader):
         # Compute prediction error
@@ -75,16 +79,16 @@ def test(
     dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module, device: str = 'cuda'
 ) -> None:
     """This function tests a neural network on the mnist test dataset."""
-    size = len(dataloader.dataset)
-    num_batches = len(dataloader)
+    size = float(len(dataloader.dataset))  # type: ignore
+    num_batches = float(len(dataloader))
     model.eval()
-    test_loss, correct = 0, 0
+    test_loss, correct = 0.0, 0.0
     with torch.no_grad():
-        for X, y in dataloader:
-            X, y = X.to(device), y.to(device)
-            pred = model(X)
-            test_loss += loss_fn(pred, y).item()
-            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+        for input_data, ground_truth in dataloader:
+            input_data, ground_truth = input_data.to(device), ground_truth.to(device)
+            pred = model(input_data)
+            test_loss += loss_fn(pred, ground_truth).item()
+            correct += (pred.argmax(1) == ground_truth).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
     print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
