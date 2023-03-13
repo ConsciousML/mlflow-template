@@ -25,5 +25,6 @@
         "--ignore-missing-imports",
         "--disallow-untyped-defs",
         "--no-implicit-optional"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "off"
 }

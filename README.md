@@ -1,7 +1,9 @@
-# Python Code Quality Continuous Integration (CI)
-This repository is a template to provide Continuous Integration (CI) for any kind of Python projects.<br>
-The main purpose of this repository is to prevent programmers to waste time re-creating their Python
-CI over and over each time they have to create a new project. <br>
+# MLFlow Continuous Integration Template
+This repository was made with the [Python Code Quality Continuous Integration (CI)](https://github.com/ConsciousML/python-code-quality-ci) template. For more information on how to use this template, please refer the previous link.
+
+The MLFlow Continuous Integration Template is a template to provide Continuous Integration (CI) for any kind of projects using MLFlow that extends the previously discussed template.<br>
+The main purpose of this repository is to prevent programmers to waste time re-creating their MLFflow
+CI over and over each time they have to create a new machine learning project. <br>
 GitHub Actions is the CI/CD platform used in this repository. <br>
 
 By default, pushing to the `main` branch is prohibited.<br>
