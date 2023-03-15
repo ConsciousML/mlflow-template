@@ -1,7 +1,6 @@
 """Train a simple neural network on the MNIST dataset using PyTorch.
 For more information, see https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html"""
 from datetime import datetime
-import requests
 
 import torch
 import mlflow
