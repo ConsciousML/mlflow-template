@@ -2,6 +2,7 @@
 For more information, see https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html"""
 import torch
 import mlflow
+import requests
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
@@ -110,6 +111,17 @@ def mnist_pytorch_training(
         batch_size (int, optional): This is the batch size to use for training. Defaults to 64.
         train_on_first_n (int, optional): This is the number of samples to train on. Defaults to 0.
     """
+
+    remote_server_uri = 'http://127.0.0.1:5000'
+    response = requests.get(f"{remote_server_uri}/version", timeout=60)
+    if response.text != mlflow.__version__:
+        raise ValueError(
+            f'The version of the remote server {remote_server_uri} is not the same as the '
+            f'version of the local client {mlflow.__version__}.'
+        )
+
+    mlflow.set_tracking_uri(remote_server_uri)
+
     mlflow.set_experiment('mnist_pytorch_training')
     mlflow.log_param('epochs', epochs)
     mlflow.log_param('batch_size', batch_size)
@@ -161,4 +173,4 @@ def mnist_pytorch_training(
 
 
 if __name__ == '__main__':
-    mnist_pytorch_training(epochs=5, batch_size=64)
+    mnist_pytorch_training(epochs=1, batch_size=64, train_on_first_n=126)
