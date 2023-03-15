@@ -1,14 +1,17 @@
 """Train a simple neural network on the MNIST dataset using PyTorch.
 For more information, see https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html"""
+from datetime import datetime
+import requests
+
 import torch
 import mlflow
-import requests
 from torch import nn
-from datetime import datetime
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+
+from mymodule.utils import set_mlflow_tracking_uri
 
 
 class NeuralNetwork(nn.Module):
@@ -103,7 +106,10 @@ def test(
 
 
 def mnist_pytorch_training(
-    epochs: int = 5, batch_size: int = 64, train_on_first_n: int = 0
+    epochs: int = 5,
+    batch_size: int = 64,
+    train_on_first_n: int = 0,
+    remote_server_uri: str | None = None,
 ) -> None:
     """This function trains a simple neural network on the MNIST dataset using PyTorch.
 
@@ -111,17 +117,11 @@ def mnist_pytorch_training(
         epochs (int, optional): This is the number of epochs to train the model. Defaults to 5.
         batch_size (int, optional): This is the batch size to use for training. Defaults to 64.
         train_on_first_n (int, optional): This is the number of samples to train on. Defaults to 0.
+        remote_server_uri (str | None, optional): This is the URI of the remote MLFlow server.
     """
 
-    remote_server_uri = 'http://127.0.0.1:5000'
-    response = requests.get(f"{remote_server_uri}/version", timeout=60)
-    if response.text != mlflow.__version__:
-        raise ValueError(
-            f'The version of the remote server {remote_server_uri} is not the same as the '
-            f'version of the local client {mlflow.__version__}.'
-        )
-
-    mlflow.set_tracking_uri(remote_server_uri)
+    if remote_server_uri is not None:
+        set_mlflow_tracking_uri(remote_server_uri)
 
     mlflow.set_experiment('mnist_pytorch_training')
 
@@ -174,7 +174,3 @@ def mnist_pytorch_training(
             train(train_dataloader, model, loss_fn, optimizer, device=device)
             test(epoch, test_dataloader, model, loss_fn, device=device)
         print("Done!")
-
-
-if __name__ == '__main__':
-    mnist_pytorch_training(epochs=1, batch_size=64, train_on_first_n=126)
