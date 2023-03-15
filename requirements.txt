@@ -8,3 +8,5 @@ setuptools
 mlflow
 torch
 torchvision
+types-requests
+
