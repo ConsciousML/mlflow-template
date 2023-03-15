@@ -4,6 +4,7 @@ import torch
 import mlflow
 import requests
 from torch import nn
+from datetime import datetime
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 from torchvision import datasets
@@ -123,53 +124,56 @@ def mnist_pytorch_training(
     mlflow.set_tracking_uri(remote_server_uri)
 
     mlflow.set_experiment('mnist_pytorch_training')
-    mlflow.log_param('epochs', epochs)
-    mlflow.log_param('batch_size', batch_size)
-    mlflow.log_param('train_on_first_n', train_on_first_n)
-    mlflow.log_param('dataset', 'FashionMNIST')
 
-    training_data = datasets.FashionMNIST(
-        root="data",
-        train=True,
-        download=True,
-        transform=ToTensor(),
-    )
+    # Set MLFlow run name according to time and date
+    with mlflow.start_run(run_name=datetime.now().strftime("%m/%d/%Y, %H:%M:%S")):
+        mlflow.log_param('epochs', epochs)
+        mlflow.log_param('batch_size', batch_size)
+        mlflow.log_param('train_on_first_n', train_on_first_n)
+        mlflow.log_param('dataset', 'FashionMNIST')
 
-    test_data = datasets.FashionMNIST(
-        root="data",
-        train=False,
-        download=True,
-        transform=ToTensor(),
-    )
+        training_data = datasets.FashionMNIST(
+            root="data",
+            train=True,
+            download=True,
+            transform=ToTensor(),
+        )
 
-    if train_on_first_n != 0:
-        training_data = torch.utils.data.Subset(training_data, range(train_on_first_n))
-        test_data = torch.utils.data.Subset(test_data, range(train_on_first_n))
+        test_data = datasets.FashionMNIST(
+            root="data",
+            train=False,
+            download=True,
+            transform=ToTensor(),
+        )
 
-    device = (
-        "cuda"
-        if torch.cuda.is_available()
-        else "mps"
-        if torch.backends.mps.is_available()
-        else "cpu"
-    )
+        if train_on_first_n != 0:
+            training_data = torch.utils.data.Subset(training_data, range(train_on_first_n))
+            test_data = torch.utils.data.Subset(test_data, range(train_on_first_n))
 
-    train_dataloader = DataLoader(training_data, batch_size=batch_size)
-    test_dataloader = DataLoader(test_data, batch_size=batch_size)
+        device = (
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
 
-    print(f"Using {device} device")
+        train_dataloader = DataLoader(training_data, batch_size=batch_size)
+        test_dataloader = DataLoader(test_data, batch_size=batch_size)
 
-    model = NeuralNetwork().to(device)
-    print(model)
+        print(f"Using {device} device")
 
-    loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+        model = NeuralNetwork().to(device)
+        print(model)
 
-    for epoch in range(epochs):
-        print(f"Epoch {epoch+1}\n-------------------------------")
-        train(train_dataloader, model, loss_fn, optimizer, device=device)
-        test(epoch, test_dataloader, model, loss_fn, device=device)
-    print("Done!")
+        loss_fn = nn.CrossEntropyLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+
+        for epoch in range(epochs):
+            print(f"Epoch {epoch+1}\n-------------------------------")
+            train(train_dataloader, model, loss_fn, optimizer, device=device)
+            test(epoch, test_dataloader, model, loss_fn, device=device)
+        print("Done!")
 
 
 if __name__ == '__main__':
