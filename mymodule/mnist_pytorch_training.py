@@ -4,7 +4,6 @@ from datetime import datetime
 
 import torch
 import mlflow
-from uuid import uuid4
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
