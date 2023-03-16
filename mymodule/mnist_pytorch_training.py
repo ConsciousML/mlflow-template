@@ -122,7 +122,7 @@ def mnist_pytorch_training(
     if remote_server_uri is not None:
         set_mlflow_tracking_uri(remote_server_uri)
 
-    mlflow.set_experiment('mnist_pytorch_training')
+    mlflow.set_experiment('mnist_pytorch')
 
     # Set MLFlow run name according to time and date
     with mlflow.start_run(run_name=datetime.now().strftime("%m/%d/%Y, %H:%M:%S")):

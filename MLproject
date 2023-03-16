@@ -1,0 +1,10 @@
+name: MLflow Template
+python_env: environment.yaml
+
+entry_points:
+  main:
+    parameters:
+      epochs: {type: int, default: 1}
+      batch_size: {type: int, default: 64}
+      train_on_first_n: {type: int, default: 0}
+    command: "python train.py --epochs {epochs} --batch_size {batch_size} --train_on_first_n {train_on_first_n}"
