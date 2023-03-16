@@ -1,0 +1,10 @@
+name: MLflow Template
+python_env: environment.yaml
+
+entry_points:
+  main:
+    #parameters:
+    #  data_file: path
+    #  regularization: {type: float, default: 0.1}
+    #command: "python train.py -r {regularization} {data_file}"
+    command: "python train.py"
