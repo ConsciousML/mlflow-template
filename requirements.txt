@@ -9,4 +9,4 @@ mlflow
 torch
 torchvision
 types-requests
-
+pre-commit

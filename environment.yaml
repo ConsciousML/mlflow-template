@@ -6,14 +6,15 @@ build_dependencies:
   - wheel==0.37.1
 
 dependencies:
-  - pytest
-  - black
-  - pylint
-  - pytest
-  - bandit
-  - mypy
-  - setuptools
-  - mlflow
-  - torch
-  - torchvision
-  - types-requests
+  - -r requirements.txt
+  #- pytest
+  #- black
+  #- pylint
+  #- pytest
+  #- bandit
+  #- mypy
+  #- setuptools
+  #- mlflow
+  #- torch
+  #- torchvision
+  #- types-requests
