@@ -4,7 +4,6 @@ from datetime import datetime
 
 import torch
 import mlflow
-import numpy as np
 from mlflow.models.signature import infer_signature
 from torch import nn
 from torch.utils.data import DataLoader
@@ -185,7 +184,7 @@ def mnist_pytorch_training(
         # Get data signature to avoid inference errors when loading Pytorch model
         for data, _ in test_dataloader:
             data = data.to(device)
-            pred = model(data)
+            pred = model(data)  # pylint: disable=not-callable
 
             data = data.cpu().numpy()
             pred = pred.cpu().detach().numpy()
