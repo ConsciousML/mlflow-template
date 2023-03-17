@@ -4,6 +4,8 @@ from datetime import datetime
 
 import torch
 import mlflow
+import numpy as np
+from mlflow.models.signature import infer_signature
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
@@ -82,7 +84,12 @@ def train(
 
 
 def test(
-    epoch: int, dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module, device: str = 'cuda'
+    epoch: int,
+    dataloader: DataLoader,
+    model: nn.Module,
+    loss_fn: nn.Module,
+    log_metric: bool = True,
+    device: str = 'cuda',
 ) -> None:
     """This function tests a neural network on the mnist test dataset."""
     size = float(len(dataloader.dataset))  # type: ignore
@@ -100,8 +107,9 @@ def test(
     correct /= size
     print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
-    mlflow.log_metric('test_loss', test_loss, step=epoch)
-    mlflow.log_metric('accuracy', correct, step=epoch)
+    if log_metric:
+        mlflow.log_metric('test_loss', test_loss, step=epoch)
+        mlflow.log_metric('accuracy', correct, step=epoch)
 
 
 def mnist_pytorch_training(
@@ -174,4 +182,20 @@ def mnist_pytorch_training(
             test(epoch, test_dataloader, model, loss_fn, device=device)
         print("Done!")
 
-        mlflow.pytorch.log_model(model, 'model', pip_requirements=['torch', '-r requirements.txt'])
+        # Get data signature to avoid inference errors when loading Pytorch model
+        for data, _ in test_dataloader:
+            data = data.to(device)
+            pred = model(data)
+
+            data = data.cpu().numpy()
+            pred = pred.cpu().detach().numpy()
+            signature = infer_signature(data, pred)
+            break
+
+        mlflow.pytorch.log_model(
+            model,
+            'model',
+            pip_requirements=['torch', '-r requirements.txt'],
+            registered_model_name='mnist',
+            signature=signature,
+        )
