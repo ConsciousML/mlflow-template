@@ -173,3 +173,5 @@ def mnist_pytorch_training(
             train(train_dataloader, model, loss_fn, optimizer, device=device)
             test(epoch, test_dataloader, model, loss_fn, device=device)
         print("Done!")
+
+        mlflow.pytorch.log_model(model, 'model', pip_requirements=['torch', '-r requirements.txt'])
