@@ -10,3 +10,13 @@ torch
 torchvision
 types-requests
 pre-commit
+six
+types-six
+requests
+google-api-core
+google-auth
+google-cloud-core
+google-cloud-storage
+google-crc32c
+google-resumable-media
+googleapis-common-protos
