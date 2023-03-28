@@ -5,7 +5,7 @@ pytest
 bandit
 mypy
 setuptools
-mlflow
+mlflow==2.2.0
 torch
 torchvision
 types-requests
