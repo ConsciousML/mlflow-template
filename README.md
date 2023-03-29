@@ -111,7 +111,7 @@ Change the value of the `PYTHON_VERSION` env variable to suit your needs.
 ### Using a Tracking Server on GCP
 If you want to host your tracking server on GCP, you can follow this [link](https://blog.axelmendoza.fr/posts/2023-03-27-mlflow-gcp.html).
 Otherwise, if you already have your own GCP infrastructure, you need to have:
-- A service account name `mlflow-log-pusher` with the Editor role on:
+- A service account named `mlflow-log-pusher` with the Editor role on:
     - Compute Engine
     - Google APIs Service Agent
     - App Engine
