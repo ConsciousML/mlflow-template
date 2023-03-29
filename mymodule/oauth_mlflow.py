@@ -19,18 +19,27 @@ class OAuthMLflow:
     If not found it will download the key from GCP and save it in the current working directory.
     """
 
-    def __init__(self, tracking_uri: str) -> None:
+    def __init__(
+        self,
+        tracking_uri: str,
+        sa_name: str = 'mlflow-log-pusher',
+        sa_key_name: str = 'mlflow-log-pusher-key.json',
+    ) -> None:
         """
         Args:
             tracking_uri (str): The MLflow tracking URI to authenticate with.
+            sa_key_name (str, optional): The name of the service account key to use.
+            sa_name (str, optional): The name of the service account to use.
         """
         self.tracking_uri = tracking_uri
+        self.sa_name = sa_name
+        self.sa_key_name = sa_key_name
         if self.tracking_uri is None:
             return
 
         mlflow.set_tracking_uri(self.tracking_uri)
 
-        service_account_key_path = os.path.join(os.getcwd(), 'mlflow-log-pusher-key.json')
+        service_account_key_path = os.path.join(os.getcwd(), self.sa_key_name)
         if not os.path.exists(service_account_key_path):
             self.sa_key_interactive_download()
             print(f'Service account key downloaded in: {service_account_key_path}')
@@ -103,17 +112,15 @@ class OAuthMLflow:
             return
 
         if not self.ask_user(
-            'Do you have a `mlflow-log-pusher` service account with the editor role on:\n'
+            f'Do you have a `{self.sa_key_name}` service account with the editor role on:\n'
             '- Compute Engine\n'
             '- Google APIs Service Agent\n'
             '- App Engine'
         ):
             print(
-                """
-                Create the service account or copy the key from an existing one in the root
-                directory of your project and name it `mlflow-log-pusher-key.json`.\n
-                You are continuing without OAuth authentication.\n
-                """
+                'Create the service account or copy the key from an existing one in the root'
+                f'directory of your project and name it `{self.sa_key_name}`.\n'
+                'You are continuing without OAuth authentication.\n'
             )
             return
 
@@ -133,9 +140,9 @@ class OAuthMLflow:
                     'service-accounts',
                     'keys',
                     'create',
-                    './mlflow-log-pusher-key.json',
+                    f'./{self.sa_key_name}',
                     '--iam-account',
-                    f'mlflow-log-pusher@{project_id}.iam.gserviceaccount.com',
+                    f'{self.sa_name}@{project_id}.iam.gserviceaccount.com',
                 ],
                 shell=False,
             )  # nosec B603 B607
