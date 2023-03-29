@@ -1,13 +1,16 @@
 # MLFlow Continuous Integration Template
 This repository was made with the [Python Code Quality Continuous Integration (CI)](https://github.com/ConsciousML/python-code-quality-ci) template. For more information on how to use this template, please refer the previous link.
 
-The MLFlow Continuous Integration Template is a template to provide Continuous Integration (CI) for any kind of projects using MLFlow that extends the previously discussed template.<br>
-The main purpose of this repository is to prevent programmers to waste time re-creating their MLFflow
-CI over and over each time they have to create a new machine learning project. <br>
-GitHub Actions is the CI/CD platform used in this repository. <br>
+This template to provide the following features:
+- A GitHub Actions Continuous Integration (CI) from MLflow (pytest, pylint, black, mypy, bandit).
+- Pre-commit hooks to ensure that the code is always clean before commiting
+- MLflow and Pytorch example code to track your experiments
+- Guideliens to customize the CI to your needs
 
-By default, pushing to the `main` branch is prohibited.<br>
-The following workflow is advised using this template:
+The main purpose of this repository is to prevent programmers to waste time re-creating their MLFflow
+CI over and over each time they have to create a new machine learning project.<br>
+
+The [GitHub Flow] workflow is advised to this template:
 - Create a branch for your feature
 - Create Pull Request once your feature is ready
 - The PR will trigger the CI
@@ -84,14 +87,13 @@ The CI by default is triggered on merge on the `main` branch. <br>
 If any of the following job fail, the push/merge will be rejected. <br>
 This ensures that the code meets a certain level of quality. <br>
 
-The CI contains the following jobs:
-- `create-virutalenv`: creates a virtual environment with the necessary dependencies.
-    Used by the other jobs to run in parallel and avoid the re-definition of the Python environment.
-- `check-linting`: uses Pylint to check for any linting error. If any is found, the CI triggers and error.
-- `check-coding-style`: runs Black to check for any formatting error in the Python code.
-- `check-static-types`: uses MyPy to check for type hints errors.
-- `check-security-vulnerability`: runs bandit to check for any security vulnerability in the code.
-- `run-tests`: uses PyTest to make sure tests pass.
+The CI uses following tools:
+- `Virtualenv`: creates a virtual environment with the necessary dependencies.
+- `Pylint`: check for any linting error. If any is found, the CI triggers and error.
+- `Black` to check for any formatting error in the Python code.
+- `MyPy`: to check for type hints errors.
+- `Bandit` to check for any security vulnerability in the code.
+- `Pytest` to run the test suite.
 
 ### Customization
 This repository comes with multiple configuration file that you can modify as you see fit:
@@ -105,4 +107,40 @@ This repository comes with multiple configuration file that you can modify as yo
 
 To change the Python version of the CI, edit the `github/workflows/main-ci.yml` file. <br>
 Change the value of the `PYTHON_VERSION` env variable to suit your needs.
+
+### Using a Tracking Server on GCP
+If you want to host your tracking server on GCP, you can follow this [link](https://blog.axelmendoza.fr/posts/2023-03-27-mlflow-gcp.html).
+Otherwise, if you already have your own GCP infrastructure, you need to have:
+- A service account named `mlflow-log-pusher` with the Editor role on:
+    - Compute Engine
+    - Google APIs Service Agent
+    - App Engine
+- A OAuth 2.0 set up to authenticate your clients to the tracking server.
+
+First, add your tracking server URI to your environment variables:
+```bash
+export MLFLOW_TRACKING_URI=<your/tracking/uri>
+```
+
+Or add it to your `~/.bashrc` file:
+```bash
+echo "export MLFLOW_TRACKING_URI=<your/tracking/uri>" >> ~/.bashrc
+```
+
+Then run the following command to authenticate to the MLflow tracking server:
+```python
+from mymodule.oauth_mlflow import OAuthMLflow
+
+tracking_uri = '<your/tracking/uri>'
+OAuthMLflow(tracking_uri)
+
+# Your MLflow code here
+```
+The first time you run your code, you will be asked to authenticate to the Tracking Server by providing the `project_id` of your GCP project as well as the password of your GCP admin account. A `mlflow-log-pusher-key.json` file will be created in at the root of this repository. This file is used to authenticate you to the tracking server.
+
+Once the `mlflow-log-pusher-key.json` file is created, you can run your code without being asked to authenticate.
+
+The `train.py` authenticates you by default.
+
+
 
